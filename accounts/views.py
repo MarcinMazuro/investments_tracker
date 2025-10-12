@@ -8,7 +8,7 @@ from django.contrib.auth.forms import UserCreationForm
 
 def profile(request, username):
     # Placeholder implementation for user profile view
-    return HttpResponse(f"User profile page for {username}")
+    return render(request, 'accounts/profile.html', {'username': username})
 
 class CustomLoginView(LoginView):
     def get_success_url(self):

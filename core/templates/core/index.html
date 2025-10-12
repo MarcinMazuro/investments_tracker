@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Main page{% endblock %}
+
+{% block content %}
+    <div class="jumbotron">
+        <h1 class="display-4">Welcome to Investments Tracker!</h1>
+        <p class="lead">Track and manage your investments with ease.</p>
+        <hr class="my-4">
+        {% if user.is_authenticated %}
+            <p>Go to your <a href="{% url 'accounts:profile' username=user.username %}">profile</a> to view your investments.</p>
+        {% else %}
+            <p><a href="{% url 'login' %}">Log in</a> or <a href="{% url 'register' %}">Register</a> to get started.</p>
+        {% endif %}
+    </div>
+{% endblock %}
