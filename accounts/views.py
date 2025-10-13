@@ -4,9 +4,7 @@ from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, logout as auth_logout, login
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.mixins import UserPassesTestMixin
-from .forms import LoginForm
+from .forms import LoginForm, CustomUserCreationForm
 
 
 def profile(request, username):
@@ -36,7 +34,7 @@ def user_login(request):
 
 def logout(request):
     auth_logout(request)
-    return redirect('core:index')
+    return render(request, 'accounts/logout.html')
 
 
 def register(request):
@@ -44,11 +42,11 @@ def register(request):
         return redirect('core:index')
 
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             return redirect('accounts:profile', username=user.username)
     else:
-        form = UserCreationForm()
-    return render(request, 'registration/register.html', {'form': form})
+        form = CustomUserCreationForm()
+    return render(request, 'accounts/register.html', {'form': form})
