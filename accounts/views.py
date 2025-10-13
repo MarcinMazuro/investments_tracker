@@ -5,12 +5,16 @@ from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout, login
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.mixins import UserPassesTestMixin
 
 def profile(request, username):
     # Placeholder implementation for user profile view
     return render(request, 'accounts/profile.html', {'username': username})
 
-class CustomLoginView(LoginView):
+class CustomLoginView(UserPassesTestMixin, LoginView):
+    def test_func(self):
+        return not self.request.user.is_authenticated
+
     def get_success_url(self):
         username = self.request.user.username
         return reverse_lazy('accounts:profile', kwargs={'username': username})
@@ -20,6 +24,9 @@ def logout(request):
     return redirect('core:index')
 
 def register(request):
+    if request.user.is_authenticated:
+        return redirect('core:index')
+
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -29,3 +36,5 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
+
+
