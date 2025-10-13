@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Log in{% endblock %}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Logowanie</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {# Render form #}
+                        {% bootstrap_form form %}
+                        
+                        {# Render submit button #}
+                        {% bootstrap_button button_type="submit" content="Zaloguj się" %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

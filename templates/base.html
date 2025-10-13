@@ -28,14 +28,14 @@
                             <a class="nav-link" href="{% url 'accounts:profile' username=user.username %}">Profile ({{ user.username }})</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">Log out</a>
+                            <a class="nav-link" href="{% url 'accounts:logout' %}">Log out</a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">Log in</a>
+                            <a class="nav-link" href="{% url 'accounts:login' %}">Log in</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'register' %}">Register</a>
+                            <a class="nav-link" href="{% url 'accounts:register' %}">Register</a>
                     {% endif %}
                 </ul>
             </div>
