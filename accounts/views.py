@@ -42,7 +42,6 @@ class CustomLoginView(LoginView):
         return reverse_lazy('accounts:profile', kwargs={'username': self.request.user.username})
 
 
-
 def logout(request):
     auth_logout(request)
     return render(request, 'accounts/logout.html')

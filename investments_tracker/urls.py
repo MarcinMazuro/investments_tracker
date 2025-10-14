@@ -17,9 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from accounts import views as accounts_views
+from django.conf.urls import handler404, handler500
 
 urlpatterns = [
     path('', include('core.urls')),
     path('accounts/', include('accounts.urls')),
     path('admin/', admin.site.urls),
 ]
+
+
+handler404 = 'core.views.handler404'
+handler500 = 'core.views.handler500'
