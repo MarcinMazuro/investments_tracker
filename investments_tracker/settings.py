@@ -133,3 +133,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Redirect to user profile after login
 LOGIN_REDIRECT_URL = '/'
+
+# Email configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'invstrack01@gmail.com'
+EMAIL_HOST_PASSWORD = 'izzj vxim boau ybto '
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
