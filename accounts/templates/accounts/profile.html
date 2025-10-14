@@ -14,6 +14,7 @@
                     <p><strong>Username:</strong> {{ user.username }}</p>
                     <p><strong>Email:</strong> {{ user.email }}</p>
                     <!-- Add more user details as needed -->
+                    <a href="{% url 'accounts:password_change' %}" class="btn btn-secondary">Change Password</a>
                 </div>
             </div>
         </div>
