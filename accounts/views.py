@@ -15,8 +15,11 @@ from django.template.loader import render_to_string
 
 
 def profile(request, username):
-    # Placeholder implementation for user profile view
-    return render(request, 'accounts/profile.html', {'username': username})
+    if User.objects.filter(username=username).exists():
+        profile_user = User.objects.get(username=username)
+        return render(request, 'accounts/profile.html', {'profile_user': profile_user})
+    else:
+        return render(request, 'core/404.html', status=404)
 
 
 # def user_login(request):

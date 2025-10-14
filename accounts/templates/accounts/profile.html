@@ -1,20 +1,21 @@
 {% extends "base.html" %}
 {% load django_bootstrap5 %}
 
-{% block title %}{{ user.username }}'s Profile{% endblock %}
+{% block title %}{{ profile_user.username }}'s Profile{% endblock %}
 
 {% block content %}
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    <h2>{{ user.username }}'s Profile</h2>
+                    <h2>{{ profile_user.username }}'s Profile</h2>
                 </div>
                 <div class="card-body">
-                    <p><strong>Username:</strong> {{ user.username }}</p>
-                    <p><strong>Email:</strong> {{ user.email }}</p>
-                    <!-- Add more user details as needed -->
+                    <p><strong>Username:</strong> {{ profile_user.username }}</p>
+                    <p><strong>Email:</strong> {{ profile_user.email }}</p>
+                    {% if profile_user == user %}
                     <a href="{% url 'accounts:password_change' %}" class="btn btn-secondary">Change Password</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
