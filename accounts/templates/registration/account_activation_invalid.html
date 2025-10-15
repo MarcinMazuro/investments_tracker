@@ -4,5 +4,7 @@
     <div class="text-center">
         <h1>Invalid Activation Link</h1>
         <p>The activation link is invalid or has expired. Please try to register again.</p>
+        <hr>
+        <p>If you did not receive the email, you can <a href="{% url 'accounts:resend_activation_email' %}">resend the activation email</a>.</p>
     </div>
 {% endblock %}

@@ -2,17 +2,14 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.views import PasswordChangeView, LoginView
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, logout as auth_logout, login
+from django.contrib.auth import logout as auth_logout, login
 from .forms import CustomUserCreationForm
-from django.contrib.auth import update_session_auth_hash
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import send_mail
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
-from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import User
-from django.template.loader import render_to_string
 from django.contrib import messages
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
+from django.contrib.auth.tokens import default_token_generator
+from .utils import send_activation_email
 
 
 def profile(request, username):
@@ -67,17 +64,9 @@ def register(request):
             user.is_active = True
             user.save()
 
-            # Send activation email
-            current_site = get_current_site(request)
-            subject = 'Activate Your Account'
-            message = render_to_string('registration/account_activation_email.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': default_token_generator.make_token(user),
-            })
-            send_mail(subject, message, 'no-reply@investments_tracker.com', [user.email])
             login(request, user)
+            send_activation_email(request, user)
+
             # Redirect to the homepage, middleware will handle the rest
             return redirect('core:index') 
     else:
@@ -98,15 +87,7 @@ def resend_activation_email(request):
     if user.profile.email_confirmed:
         return redirect('core:index')
 
-    current_site = get_current_site(request)
-    subject = 'Activate Your Account'
-    message = render_to_string('registration/account_activation_email.html', {
-        'user': user,
-        'domain': current_site.domain,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-        'token': default_token_generator.make_token(user),
-    })
-    send_mail(subject, message, 'no-reply@investments_tracker.com', [user.email])
+    send_activation_email(request, user)
 
     messages.success(request, 'A new activation link has been sent to your email address.')
     return redirect('accounts:account_activation_sent')
