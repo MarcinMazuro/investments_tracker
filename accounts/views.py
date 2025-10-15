@@ -12,6 +12,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
+from django.contrib import messages
 
 
 def profile(request, username):
@@ -63,7 +64,7 @@ def register(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.is_active = False  # Deactivate account until it is confirmed
+            user.is_active = True
             user.save()
 
             # Send activation email
@@ -76,15 +77,39 @@ def register(request):
                 'token': default_token_generator.make_token(user),
             })
             send_mail(subject, message, 'no-reply@investments_tracker.com', [user.email])
-
-            return redirect('accounts:account_activation_sent')
+            login(request, user)
+            # Redirect to the homepage, middleware will handle the rest
+            return redirect('core:index') 
     else:
         form = CustomUserCreationForm()
     return render(request, 'accounts/register.html', {'form': form})
 
 
+@login_required
 def account_activation_sent(request):
+    if request.user.profile.email_confirmed:
+        return redirect('accounts:profile', username=request.user.username)
     return render(request, 'registration/account_activation_sent.html')
+
+
+@login_required
+def resend_activation_email(request):
+    user = request.user
+    if user.profile.email_confirmed:
+        return redirect('core:index')
+
+    current_site = get_current_site(request)
+    subject = 'Activate Your Account'
+    message = render_to_string('registration/account_activation_email.html', {
+        'user': user,
+        'domain': current_site.domain,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'token': default_token_generator.make_token(user),
+    })
+    send_mail(subject, message, 'no-reply@investments_tracker.com', [user.email])
+
+    messages.success(request, 'A new activation link has been sent to your email address.')
+    return redirect('accounts:account_activation_sent')
 
 
 def activate(request, uidb64, token):
@@ -95,11 +120,16 @@ def activate(request, uidb64, token):
         user = None
 
     if user is not None and default_token_generator.check_token(user, token):
-        user.is_active = True
-        user.save()
-        return render(request, 'registration/account_activation_complete.html')
+        user.profile.email_confirmed = True
+        user.profile.save()
+        login(request, user)
+        return redirect('accounts:account_activation_complete')
     else:
         return render(request, 'registration/account_activation_invalid.html')
+
+
+def account_activation_complete(request):
+    return render(request, 'registration/account_activation_complete.html')
 
 
 class CustomPasswordChangeView(PasswordChangeView):
