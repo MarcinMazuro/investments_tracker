@@ -91,6 +91,22 @@ DATABASES = {
     }
 }
 
+# Use SQLite in memory for tests
+import sys
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': ':memory:',
+    }
+    # Migrations turned off for tests
+    class DisableMigrations:
+        def __contains__(self, item):
+            return True
+
+        def __getitem__(self, item):
+            return None
+
+    MIGRATION_MODULES = DisableMigrations()
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
